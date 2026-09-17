@@ -1,0 +1,13 @@
+#cloud-config
+
+package_update: true
+
+packages:
+  - docker.io
+  - docker-compose-v2
+
+runcmd:
+  - systemctl enable --now docker
+  - mkdir -p /opt/lamp
+  - cd /opt/lamp && curl -L https://raw.githubusercontent.com/DIN-BRUGER/DIN-REPO/main/docker-compose.yml -o docker-compose.yml
+  - cd /opt/lamp && docker compose up -d --build
