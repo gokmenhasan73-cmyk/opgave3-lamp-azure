@@ -14,8 +14,9 @@ provider "azurerm" {
 
 resource "azurerm_resource_group" "main" {
   name     = "rg-opgave3-lamp"
-  location = "North Europe"
+  location = "Sweden Central"
 }
+
 resource "azurerm_virtual_network" "main" {
   name                = "vnet-opgave3"
   address_space       = ["10.0.0.0/16"]
@@ -59,6 +60,7 @@ resource "azurerm_network_security_group" "main" {
     destination_address_prefix = "*"
   }
 }
+
 resource "azurerm_public_ip" "main" {
   name                = "pip-opgave3"
   location            = azurerm_resource_group.main.location
@@ -66,6 +68,7 @@ resource "azurerm_public_ip" "main" {
   allocation_method   = "Static"
   sku                 = "Standard"
 }
+
 resource "azurerm_network_interface" "main" {
   name                = "nic-opgave3"
   location            = azurerm_resource_group.main.location
@@ -78,10 +81,12 @@ resource "azurerm_network_interface" "main" {
     public_ip_address_id          = azurerm_public_ip.main.id
   }
 }
+
 resource "azurerm_network_interface_security_group_association" "main" {
   network_interface_id      = azurerm_network_interface.main.id
   network_security_group_id = azurerm_network_security_group.main.id
 }
+
 resource "azurerm_linux_virtual_machine" "main" {
   name                = "vm-opgave3"
   resource_group_name = azurerm_resource_group.main.name
@@ -97,6 +102,8 @@ resource "azurerm_linux_virtual_machine" "main" {
     username   = "azureuser"
     public_key = var.ssh_public_key
   }
+
+  custom_data = filebase64("${path.module}/cloud-init/cloud-init.yaml")
 
   os_disk {
     caching              = "ReadWrite"
