@@ -11,4 +11,5 @@ runcmd:
   - systemctl enable --now docker
   - mkdir -p /opt/lamp
   - git clone https://github.com/gokmenhasan73-cmyk/opgave3-lamp-azure.git /opt/lamp
+  - echo "WEB_PORT=80" > /opt/lamp/.env
   - cd /opt/lamp && docker compose up -d --build
