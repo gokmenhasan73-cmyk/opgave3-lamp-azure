@@ -5,9 +5,10 @@ package_update: true
 packages:
   - docker.io
   - docker-compose-v2
+  - git
 
 runcmd:
   - systemctl enable --now docker
   - mkdir -p /opt/lamp
-  - cd /opt/lamp && curl -L https://raw.githubusercontent.com/DIN-BRUGER/DIN-REPO/main/docker-compose.yml -o docker-compose.yml
+  - git clone https://github.com/gokmenhasan73-cmyk/opgave3-lamp-azure.git /opt/lamp
   - cd /opt/lamp && docker compose up -d --build
