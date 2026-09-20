@@ -55,3 +55,21 @@ opgave3/
 ├── docker-compose.yml
 ├── .gitignore
 └── README.md
+
+## Cloud-økonomi
+
+Azure Pricing Calculator er brugt til at beregne prisen på den VM, der faktisk blev deployet.
+
+- Region: Sweden Central
+- VM: Standard_B2s_v2
+- OS: Linux / Ubuntu
+- Drift: 730 timer pr. måned
+- Månedlig beregnet pris: 63,07 USD
+- Årlig beregnet pris: 756,86 USD
+- Beregnet pris pr. dag: ca. 2,07 USD
+- Beregnet pris for 100 dage: ca. 207,36 USD
+
+Opgaven arbejder med et budget på 200 USD. Med denne konfiguration er 100 dages konstant drift derfor lige over budgettet. 200 USD svarer til omkring 96 dages drift ud fra den beregnede VM-pris.
+
+Den valgte B2s v2 blev brugt, fordi den var tilgængelig i Sweden Central, hvor løsningen blev deployet.
+
