@@ -1,9 +1,9 @@
 <?php
 
-$host = "db";
-$db = "lampdb";
-$user = "lampuser";
-$password = "lamppassword";
+$host = getenv("DB_HOST") ?: "db";
+$db = getenv("DB_NAME") ?: "lampdb";
+$user = getenv("DB_USER") ?: "lampuser";
+$password = getenv("DB_PASSWORD") ?: "";
 
 $conn = new mysqli($host, $user, $password, $db);
 

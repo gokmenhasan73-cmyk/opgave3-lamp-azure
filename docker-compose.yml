@@ -3,6 +3,11 @@ services:
     build: ./web
     ports:
       - "${WEB_PORT:-8080}:80"
+    environment:
+      DB_HOST: ${DB_HOST:-db}
+      DB_NAME: ${DB_NAME:-lampdb}
+      DB_USER: ${DB_USER:-lampuser}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
     volumes:
       - ./src:/var/www/html
     depends_on:
@@ -11,10 +16,10 @@ services:
   db:
     image: mariadb:11
     environment:
-      MARIADB_ROOT_PASSWORD: rootpassword
-      MARIADB_DATABASE: lampdb
-      MARIADB_USER: lampuser
-      MARIADB_PASSWORD: lamppassword
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?MARIADB_ROOT_PASSWORD is required}
+      MARIADB_DATABASE: ${MARIADB_DATABASE:-lampdb}
+      MARIADB_USER: ${MARIADB_USER:-lampuser}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:?MARIADB_PASSWORD is required}
     volumes:
       - db_data:/var/lib/mysql
 

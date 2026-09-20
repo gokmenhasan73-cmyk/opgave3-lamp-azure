@@ -6,10 +6,11 @@ packages:
   - docker.io
   - docker-compose-v2
   - git
+  - openssl
 
 runcmd:
   - systemctl enable --now docker
   - mkdir -p /opt/lamp
   - git clone https://github.com/gokmenhasan73-cmyk/opgave3-lamp-azure.git /opt/lamp
-  - echo "WEB_PORT=80" > /opt/lamp/.env
+  - bash -c 'DB_PASSWORD=$(openssl rand -hex 24); ROOT_PASSWORD=$(openssl rand -hex 24); printf "WEB_PORT=80\nDB_HOST=db\nDB_NAME=lampdb\nDB_USER=lampuser\nDB_PASSWORD=%s\nMARIADB_ROOT_PASSWORD=%s\nMARIADB_DATABASE=lampdb\nMARIADB_USER=lampuser\nMARIADB_PASSWORD=%s\n" "$DB_PASSWORD" "$ROOT_PASSWORD" "$DB_PASSWORD" > /opt/lamp/.env; chmod 600 /opt/lamp/.env'
   - cd /opt/lamp && docker compose up -d --build
