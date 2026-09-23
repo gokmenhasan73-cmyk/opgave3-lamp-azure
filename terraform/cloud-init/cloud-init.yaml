@@ -7,10 +7,44 @@ packages:
   - docker-compose-v2
   - git
   - openssl
+  - curl
 
 runcmd:
   - systemctl enable --now docker
+
   - mkdir -p /opt/lamp
+
   - git clone https://github.com/gokmenhasan73-cmyk/opgave3-lamp-azure.git /opt/lamp
-  - bash -c 'DB_PASSWORD=$(openssl rand -hex 24); ROOT_PASSWORD=$(openssl rand -hex 24); printf "WEB_PORT=80\nDB_HOST=db\nDB_NAME=lampdb\nDB_USER=lampuser\nDB_PASSWORD=%s\nMARIADB_ROOT_PASSWORD=%s\nMARIADB_DATABASE=lampdb\nMARIADB_USER=lampuser\nMARIADB_PASSWORD=%s\n" "$DB_PASSWORD" "$ROOT_PASSWORD" "$DB_PASSWORD" > /opt/lamp/.env; chmod 600 /opt/lamp/.env'
+
+  - mkdir -p /opt/lamp/nginx/certs
+
+  - |
+    PUBLIC_IP=$(curl -s https://api.ipify.org)
+
+    openssl req -x509 -nodes -days 365 \
+      -newkey rsa:2048 \
+      -keyout /opt/lamp/nginx/certs/server.key \
+      -out /opt/lamp/nginx/certs/server.crt \
+      -subj "/CN=$PUBLIC_IP" \
+      -addext "subjectAltName=IP:$PUBLIC_IP"
+
+  - |
+    DB_PASSWORD=$(openssl rand -hex 24)
+    ROOT_PASSWORD=$(openssl rand -hex 24)
+
+    cat > /opt/lamp/.env <<EOF
+HTTP_PORT=80
+HTTPS_PORT=443
+DB_HOST=db
+DB_NAME=lampdb
+DB_USER=lampuser
+DB_PASSWORD=$DB_PASSWORD
+MARIADB_ROOT_PASSWORD=$ROOT_PASSWORD
+MARIADB_DATABASE=lampdb
+MARIADB_USER=lampuser
+MARIADB_PASSWORD=$DB_PASSWORD
+EOF
+
+    chmod 600 /opt/lamp/.env
+
   - cd /opt/lamp && docker compose up -d --build

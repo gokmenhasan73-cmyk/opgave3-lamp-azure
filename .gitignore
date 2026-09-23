@@ -9,3 +9,5 @@ terraform/terraform.tfvars
 terraform/*.tfplan
 
 .env
+
+nginx/certs/

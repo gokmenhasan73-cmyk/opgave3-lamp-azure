@@ -1,8 +1,26 @@
 services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    environment:
+      HTTPS_PORT: ${HTTPS_PORT:-443}
+    volumes:
+      - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - varnish
+
+  varnish:
+    image: varnish:7
+    volumes:
+      - ./varnish/default.vcl:/etc/varnish/default.vcl:ro
+    depends_on:
+      - web
+
   web:
     build: ./web
-    ports:
-      - "${WEB_PORT:-8080}:80"
     environment:
       DB_HOST: ${DB_HOST:-db}
       DB_NAME: ${DB_NAME:-lampdb}

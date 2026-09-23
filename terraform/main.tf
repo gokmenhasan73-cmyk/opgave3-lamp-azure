@@ -9,6 +9,7 @@ terraform {
 
 provider "azurerm" {
   features {}
+
   subscription_id = var.subscription_id
 }
 
@@ -44,19 +45,31 @@ resource "azurerm_network_security_group" "main" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "80"
-    source_address_prefix      = "*"
+    source_address_prefix     = "*"
     destination_address_prefix = "*"
   }
 
   security_rule {
-    name                       = "allow-ssh"
+    name                       = "allow-https"
     priority                   = 110
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "22"
-    source_address_prefix      = var.admin_cidr
+    destination_port_range     = "443"
+    source_address_prefix     = "*"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "allow-ssh"
+    priority                  = 120
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range         = "*"
+    destination_port_range    = "22"
+    source_address_prefix     = var.admin_cidr
     destination_address_prefix = "*"
   }
 }
