@@ -2,60 +2,39 @@
 
 ## Formål
 
-I denne opgave har jeg lavet en LAMP-løsning i Azure. Formålet er at få en webserver med Apache og PHP til at køre sammen med en MariaDB-database.
+I denne opgave har jeg designet, deployet, sikret og testet en LAMP-løsning i Microsoft Azure.
 
-Jeg har brugt Docker til at køre webserveren og databasen som separate containere. Azure-delen er lavet med Terraform, så infrastrukturen kan oprettes automatisk.
+Løsningen består af Linux, Apache, MariaDB og PHP. Applikationen kører i Docker-containere på en Azure Linux VM.
 
-Jeg har brugt:
+Azure-infrastrukturen bliver oprettet med Terraform, og VM'en bliver automatisk konfigureret med Cloud-init.
 
-- Ubuntu Linux
-- Apache
-- PHP
-- MariaDB
-- Docker
-- Docker Compose
-- Terraform
-- Cloud-init
-- Azure Virtual Network
-- Azure Network Security Group
-- Azure Public IP
-- Playwright til automatiske tests
 
-## Arkitektur
+# 1. Projektets formål
 
-Jeg har lavet et arkitekturdiagram, som viser hvordan de forskellige dele hænger sammen.
+Formålet er at udvikle en funktionel LAMP-løsning, som kan køre i Azure og samtidig være:
 
-[Se arkitekturdiagrammet](docs/architecture.md)
+- Funktionel
+- Testbar
+- Sikker
+- Reproducerbar
+- Dokumenteret
+- Mulig at fjerne igen med Infrastructure as Code
 
-Azure VM'en kører Ubuntu og Docker. Inde i Docker kører Apache/PHP og MariaDB i hver sin container.
+Derudover er der fokus på cloud-økonomi, da løsningen skal kunne køre så længe som muligt inden for opgavens budget på 200 USD.
 
-Websiden kan tilgås udefra gennem port 80. MariaDB er derimod kun tilgængelig internt mellem Docker-containerne.
+Projektet undersøger derfor blandt andet:
 
-## Projektstruktur
-
-```text
-opgave3/
-├── src/
-│   └── index.php
-├── web/
-│   └── Dockerfile
-├── terraform/
-│   ├── main.tf
-│   ├── variables.tf
-│   └── cloud-init/
-│       └── cloud-init.yaml
-├── playwright/
-│   ├── tests/
-│   │   └── app.spec.js
-│   ├── playwright.config.js
-│   ├── package.json
-│   └── package-lock.json
-├── docs/
-│   └── architecture.md
-├── docker-compose.yml
-├── .gitignore
-└── README.md
-
+- Valg af Azure-region
+- Valg af VM-størrelse
+- Pris pr. dag
+- Pris pr. måned
+- Pris for længere drift
+- Netværksdesign
+- Sikkerhed
+- Docker-containerisering
+- Infrastructure as Code
+- Automatiseret deployment
+- Automatiseret test
 ## Cloud-økonomi
 
 Azure Pricing Calculator er brugt til at beregne prisen på den VM, der faktisk blev deployet.
@@ -72,4 +51,70 @@ Azure Pricing Calculator er brugt til at beregne prisen på den VM, der faktisk 
 Opgaven arbejder med et budget på 200 USD. Med denne konfiguration er 100 dages konstant drift derfor lige over budgettet. 200 USD svarer til omkring 96 dages drift ud fra den beregnede VM-pris.
 
 Den valgte B2s v2 blev brugt, fordi den var tilgængelig i Sweden Central, hvor løsningen blev deployet.
+---
+## Teknologier
 
+- Ubuntu Linux
+- Apache
+- PHP
+- MariaDB
+- Docker
+- Docker Compose
+- Nginx
+- Varnish
+- Terraform
+- Cloud-init
+- Azure Virtual Network
+- Azure Subnet
+- Azure Network Security Group
+- Azure Public IP
+- Azure Linux VM
+- Playwright
+
+## Arkitektur
+
+Løsningen består af to dele:
+
+1. Azure-infrastrukturen
+2. Applikationen, som kører i Docker på Azure VM'en
+
+Azure-infrastrukturen bliver oprettet med Terraform.
+
+VM'en bliver automatisk konfigureret med Cloud-init.
+
+Inde på VM'en kører Docker Compose, som starter de forskellige containere.
+
+Den overordnede trafik ser sådan ud:
+
+````
+Internet
+   |
+   v
+Azure Public IP
+51.12.53.10
+   |
+   v
+Azure Network Security
+Group (NSG)
+   |
+   +---- SSH 22 (kun administrativ IP)
+   |
+   +---- HTTP 80
+   |
+   +---- HTTPS 443
+   |
+   v
+Nginx
+Reverse Proxy / TLS
+   |
+   v
+Varnish
+Cache
+   |
+   v
+Apache + PHP
+WeB
+   |
+   v
+MariaDB
+Database
