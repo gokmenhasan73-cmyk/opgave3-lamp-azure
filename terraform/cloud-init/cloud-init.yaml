@@ -33,17 +33,17 @@ runcmd:
     ROOT_PASSWORD=$(openssl rand -hex 24)
 
     cat > /opt/lamp/.env <<EOF
-HTTP_PORT=80
-HTTPS_PORT=443
-DB_HOST=db
-DB_NAME=lampdb
-DB_USER=lampuser
-DB_PASSWORD=$DB_PASSWORD
-MARIADB_ROOT_PASSWORD=$ROOT_PASSWORD
-MARIADB_DATABASE=lampdb
-MARIADB_USER=lampuser
-MARIADB_PASSWORD=$DB_PASSWORD
-EOF
+    HTTP_PORT=80
+    HTTPS_PORT=443
+    DB_HOST=db
+    DB_NAME=lampdb
+    DB_USER=lampuser
+    DB_PASSWORD=${DB_PASSWORD}
+    MARIADB_ROOT_PASSWORD=${ROOT_PASSWORD}
+    MARIADB_DATABASE=lampdb
+    MARIADB_USER=lampuser
+    MARIADB_PASSWORD=${DB_PASSWORD}
+    EOF
 
     chmod 600 /opt/lamp/.env
 
